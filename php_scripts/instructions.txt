@@ -1,0 +1,109 @@
+
+
+// ================ rest api android ================
+
+
+package ermanac.hardtrackmobile.View.Activities;
+
+import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
+import android.support.design.widget.TextInputLayout;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.View;
+
+import com.google.gson.JsonObject;
+import com.koushikdutta.async.future.FutureCallback;
+import com.koushikdutta.ion.Ion;
+
+import ermanac.hardtrackmobile.MainActivity;
+import ermanac.hardtrackmobile.R;
+
+public class ClientesActivity extends AppCompatActivity {
+
+    private TextInputLayout nome, email, telefone, bi, morada, profissao, telefone2, telefone3, genero, pais;
+    private View mView = null;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_clientes);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        inicializarVariaveis();
+        salvarCliente();
+
+
+    }
+
+    private void salvarCliente() {
+        FloatingActionButton fab = findViewById(R.id.fabSaveCliente);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mView =view;
+//                        String URL = "http://127.0.0.1:8000/api/adicionar";
+//                String URL = "http://165.90.77.193/api/adicionar";
+                        String URL = "http://192.168.0.103/hardtrack/public/api/adicionar";
+                Ion.getDefault(ClientesActivity.this).getConscryptMiddleware().enable(false);
+                Ion.with(ClientesActivity.this)
+                        .load("POST", URL)
+                        .setBodyParameter("nome", nome.getEditText().getText().toString().trim())
+                        .setBodyParameter("email", email.getEditText().getText().toString().trim())
+                        .setBodyParameter("morada", morada.getEditText().getText().toString().trim())
+                        .setBodyParameter("bi", bi.getEditText().getText().toString().trim())
+                        .setBodyParameter("genero", genero.getEditText().getText().toString().trim())
+                        .setBodyParameter("pais", pais.getEditText().getText().toString().trim())
+                        .setBodyParameter("telefone", telefone.getEditText().getText().toString().trim())
+                        .setBodyParameter("telefone2", telefone2.getEditText().getText().toString().trim())
+                        .setBodyParameter("telefone3", telefone3.getEditText().getText().toString().trim())
+                        .setBodyParameter("profissao", profissao.getEditText().getText().toString().trim())
+                        .asJsonObject()
+                        .setCallback(new FutureCallback<JsonObject>() {
+                            @Override
+                            public void onCompleted(Exception e, JsonObject result) {
+                                try{
+                                    String retorno = result.get("insert").getAsString();
+
+                                    if(retorno.equalsIgnoreCase("ok")){
+                                        mensagem(mView,"Dados do cliente "+nome.getEditText().getText().toString().trim()+" salvo com sucesso");
+                                    }else{
+                                        mensagem(mView,"Ops.. Erro ao salvar");
+                                    }
+                                } catch (Exception erro){
+
+                                    mensagem(mView,"Ops.. Erro ao salvar "+erro.getMessage());
+                                }
+                            }
+                        });
+                mensagem(view,"s");
+//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
+            }
+        });
+    }
+
+
+    //metodo que exibe a mensagem
+    private void mensagem(View view, String s) {
+        Snackbar.make(view, s, Snackbar.LENGTH_LONG)
+                .setAction("Action", null).show();
+
+    }
+
+    private void inicializarVariaveis() {
+        nome = findViewById(R.id.cliente_nome);
+        email = findViewById(R.id.cliente_email);
+        telefone = findViewById(R.id.cliente_telefone);
+        telefone2 = findViewById(R.id.cliente_telefone2);
+        telefone3 = findViewById(R.id.cliente_telefone3);
+        bi = findViewById(R.id.cliente_bi);
+        morada = findViewById(R.id.cliente_morada);
+        profissao = findViewById(R.id.cliente_profissao);
+        genero = findViewById(R.id.cliente_genero);
+        pais = findViewById(R.id.cliente_pais);
+    }
+
+}
+
