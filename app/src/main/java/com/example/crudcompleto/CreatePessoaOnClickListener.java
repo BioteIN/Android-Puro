@@ -1,7 +1,4 @@
 package com.example.crudcompleto;
-/*
-Author: Biote Ngovene
- */
 
 import android.app.AlertDialog;
 import android.content.Context;
